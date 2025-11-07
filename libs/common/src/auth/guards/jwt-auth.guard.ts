@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Request } from 'express';
-import { map, tap } from 'rxjs';
-import { UserDto } from '../dto/user.dto';
+import { catchError, map, of, tap } from 'rxjs';
+import { UserDto } from '../../dto/user.dto';
 
 @Injectable()
 export class CommonJwtAuthGuard implements CanActivate {
@@ -20,13 +20,12 @@ export class CommonJwtAuthGuard implements CanActivate {
 
     if (!token) return false;
 
-    return this.client
-      .send('authenticate', { Authentication: token })
-      .pipe<UserDto, boolean>(
-        tap((res: UserDto) => {
-          ctx.switchToHttp().getRequest<Request>().user = res;
-        }),
-        map(() => true),
-      );
+    return this.client.send('authenticate', { Authentication: token }).pipe(
+      tap((res: UserDto) => {
+        ctx.switchToHttp().getRequest<Request>().user = res;
+      }),
+      map(() => true),
+      catchError(() => of(false)),
+    );
   }
 }

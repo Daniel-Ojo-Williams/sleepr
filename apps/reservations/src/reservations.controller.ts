@@ -26,6 +26,7 @@ export class ReservationsController {
     const data = await this.reservationsService.create(
       createReservationDto,
       user._id,
+      user.email,
     );
     return { message: 'Reservation created successfully', data };
   }
