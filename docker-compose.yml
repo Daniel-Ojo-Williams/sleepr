@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: ./apps/reservations/Dockerfile
       target: development
+    container_name: reservations-service
     command: pnpm start:dev reservations
     env_file:
       - ./apps/reservations/.env
@@ -17,6 +18,7 @@ services:
       context: .
       dockerfile: ./apps/auth/Dockerfile
       target: development
+    container_name: auth-service
     command: pnpm start:dev auth
     env_file:
       - ./apps/auth/.env
@@ -30,14 +32,41 @@ services:
       context: .
       dockerfile: ./apps/payments/Dockerfile
       target: development
+    container_name: payments-service
     command: pnpm start:dev payments
     env_file:
       - ./apps/payments/.env
     ports:
       - "3004:3004"
+      - "3006:3006"
     volumes:
       - .:/usr/src/app
 
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    container_name: notifications-service
+    command: pnpm start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+    ports:
+      - "3005:3005"
+    volumes:
+      - .:/usr/src/app
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   mongo:
     image: mongo:latest
+    container_name: mongodb
     
+
+volumes:
+  redis_data:

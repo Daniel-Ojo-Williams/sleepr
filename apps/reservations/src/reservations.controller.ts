@@ -11,7 +11,13 @@ import {
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { CommonJwtAuthGuard, CurrentUser, UserDto } from '@app/common';
+import {
+  CommonJwtAuthGuard,
+  CurrentUser,
+  PaymentSuccessEvent,
+  UserDto,
+} from '@app/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -38,7 +44,7 @@ export class ReservationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.reservationsService.findOne(id);
+    return this.reservationsService.findOne({ id });
   }
 
   @Patch(':id')
@@ -52,5 +58,10 @@ export class ReservationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reservationsService.remove(id);
+  }
+
+  @EventPattern('payment.success')
+  async completeReservation(@Payload() data: PaymentSuccessEvent) {
+    await this.reservationsService.completeReservation(data);
   }
 }

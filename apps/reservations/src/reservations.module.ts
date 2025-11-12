@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { ReservationsController } from './reservations.controller';
-import { AUTH_SECVICE, DatabaseModule, PAYMENTS_SERVICE } from '@app/common';
+import {
+  AUTH_SECVICE,
+  DatabaseModule,
+  EVENT_BUS,
+  PAYMENTS_SERVICE,
+} from '@app/common';
 import {
   ReservationDocument,
   ReservationSchema,
@@ -22,6 +27,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         AUTH_TCP_PORT: Joi.number().required(),
         PAYMENTS_TCP_HOST: Joi.string().required(),
         PAYMENTS_TCP_PORT: Joi.number().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
       }),
     }),
     DatabaseModule,
@@ -49,6 +56,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: config.get<string>('PAYMENTS_TCP_HOST'),
             port: config.get<number>('PAYMENTS_TCP_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: EVENT_BUS,
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            host: config.get<string>('REDIS_HOST'),
+            port: config.get<number>('REDIS_PORT'),
           },
         }),
         inject: [ConfigService],

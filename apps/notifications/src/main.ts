@@ -1,20 +1,19 @@
 import { NestFactory } from '@nestjs/core';
-import { PaymentsModule } from './payments.module';
+import { NotificationsModule } from './notifications.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const app = await NestFactory.create(PaymentsModule);
+  const app = await NestFactory.create(NotificationsModule);
   const configService = app.get(ConfigService);
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
+    transport: Transport.REDIS,
     options: {
-      host: '0.0.0.0',
-      port: configService.get<number>('TCP_PORT')!,
+      host: configService.get<string>('REDIS_HOST'),
+      port: configService.get<number>('REDIS_PORT'),
     },
   });
-  app.useLogger(app.get(Logger));
+
   await app.startAllMicroservices();
   await app.listen(configService.get<number>('HTTP_PORT')!);
 }

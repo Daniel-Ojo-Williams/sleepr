@@ -1,4 +1,10 @@
 export interface PaymentResponse {
-  refrence: string;
+  reference: string;
   authorizationUrl: string;
+}
+
+export interface PaymentSuccessEvent {
+  reference: string;
+  amount: number;
+  type: 'reservation';
 }

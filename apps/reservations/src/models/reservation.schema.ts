@@ -18,6 +18,9 @@ export class ReservationDocument extends AbstractDocument {
 
   @Prop()
   invoiceId: string;
+
+  @Prop({ default: 'pending' })
+  status: string;
 }
 
 export const ReservationSchema =

@@ -7,3 +7,4 @@ export * from './decorators';
 export * from './utils';
 export * from './interfaces';
 export * from './utils';
+export * from './errors';

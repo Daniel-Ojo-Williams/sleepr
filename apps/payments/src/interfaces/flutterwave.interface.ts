@@ -12,6 +12,7 @@ export interface FlutterwaveCreatePaymentDto {
   link_expiration?: Date;
   redirect_url: string;
   payment_options: string;
+  meta_data?: Meta;
 }
 
 export interface FLWResponse<T> {
@@ -33,3 +34,26 @@ export type FLWQueryTransactionFeesResponse = FLWResponse<{
   flutterwave_fee: number;
   stamp_duty_fee: number;
 }>;
+
+export type Meta = {
+  item: 'reservation';
+};
+
+export interface IFlutterwaveWebhookPayload {
+  event: string;
+  data: {
+    id: string;
+    tx_ref: string;
+    amount: number;
+    app_fee: number;
+    currency: string;
+    charged_amount: number;
+    status: string;
+    meta: Meta;
+    customer: {
+      name: string;
+      email: string;
+    };
+  };
+  meta_data: Meta;
+}
